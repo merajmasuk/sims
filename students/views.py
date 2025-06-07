@@ -1,11 +1,16 @@
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from django.contrib.auth.decorators import login_required
+from rest_framework.views import APIView
 
-from .models import Student
+import traceback
+
+from utils.core.response import UtilsResponse
 from .forms import StudentForm
-
+from .models import Student
+from .serializers import StudentSerializer
+from . import service
 
 # Create your views here.
 @login_required
@@ -78,3 +83,51 @@ def delete(request, id):
         student = Student.objects.get(pk=id)
         student.delete()
     return HttpResponseRedirect(reverse('index'))
+
+
+            
+
+class StudentCreateAndListAPIViewSet(APIView):
+    def get(self, request):
+        try:
+            students = Student.objects.all()
+            response = StudentSerializer(students, many=True)
+            return UtilsResponse.success(response)
+        except Exception as e:
+            print(traceback.format_exc())
+            return UtilsResponse.request_error(str(e))
+        
+    def post(self, request):
+        try:
+            response = service.StudentServiceMethodHandler.create_student_info(request)
+            return UtilsResponse.created()
+        except Exception as e:
+            print(traceback.format_exc())
+            return UtilsResponse.request_error(str(e))        
+
+
+class StudentAPIViewSet(APIView):
+    def get(self, request, id):
+        try:
+            student = Student.objects.get(id=id)
+            response = StudentSerializer(student).data
+            return UtilsResponse.success(response)
+        except Exception as e:
+            print(traceback.format_exc())
+            return UtilsResponse.request_error(str(e))
+
+    def put(self, request, id):
+        try:
+            response = service.StudentServiceMethodHandler.update_student_info(request, id)
+            return UtilsResponse.success(response)
+        except Exception as e:
+            print(traceback.format_exc())
+            return UtilsResponse.request_error(str(e))
+
+    def delete(self, request, id):
+        try:
+            service.StudentServiceMethodHandler.delete_student_info(id)
+            return UtilsResponse.no_content()
+        except Exception as e:
+            print(traceback.format_exc())
+            return UtilsResponse.request_error(str(e))
