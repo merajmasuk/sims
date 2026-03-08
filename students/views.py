@@ -1,10 +1,16 @@
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from django.contrib.auth.decorators import login_required
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.decorators import action
+from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 
-from .models import Student
 from .forms import StudentForm
+from .models import Student
+from .serializers import StudentSerializer
 
 
 # Create your views here.
@@ -78,3 +84,20 @@ def delete(request, id):
         student = Student.objects.get(pk=id)
         student.delete()
     return HttpResponseRedirect(reverse('index'))
+
+
+class StudentViewSet(ModelViewSet):
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['status', 'gender']
+    search_fields = ['first_name', 'last_name', 'email', 'student_id']
+    ordering_fields = ['last_name', 'enrollment_date', 'gpa']
+
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        return Response({
+            'total': Student.objects.count(),
+            'active': Student.objects.filter(status='active').count(),
+            'graduated': Student.objects.filter(status='graduated').count(),
+        })

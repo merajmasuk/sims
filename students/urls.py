@@ -1,10 +1,7 @@
-from django.urls import path
-from . import views
+from rest_framework.routers import DefaultRouter
 
-urlpatterns = [
-  path('', views.index, name='index'),
-  path('<int:id>', views.view_student, name='view_student'),
-  path('add/', views.add, name='add'),
-  path('edit/<int:id>/', views.edit, name='edit'),
-  path('delete/<int:id>/', views.delete, name='delete'),
-]
+from .views import StudentViewSet
+
+router = DefaultRouter()
+router.register(r'students', StudentViewSet)
+urlpatterns = router.urls
