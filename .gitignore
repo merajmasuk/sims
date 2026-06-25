@@ -1,21 +1,22 @@
-# venv
-venv/
-env/
-.venv/
-.env/
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
 
-# editors
-.idea
-*.pyc
-*.save
-
-.DS_Store
+# Django
+*.log
+local_settings.py
 db.sqlite3
+staticfiles/
 media/
 
-# migrations
-*/migrations/*
-!*/migrations/__init__.py
+# Env
+.env
 
-# secret
-*/secret.py
+# IDE
+.vscode/
+.idea/
+*.swp
