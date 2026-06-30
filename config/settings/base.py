@@ -88,6 +88,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # --- Auth -----------------------------------------------------------
 AUTH_USER_MODEL = "users.User"
+# AUTH_USER_MODEL = "auth.User"
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -101,6 +102,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         # JWT validation against Keycloak-issued tokens (configured in users module)
         "apps.users.authentication.KeycloakJWTAuthentication",
+        # "apps.users.authentication.SessionAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
@@ -110,9 +112,12 @@ REST_FRAMEWORK = {
 }
 
 # --- Keycloak / OIDC ------------------------------------------------
-KEYCLOAK_SERVER_URL = config("KEYCLOAK_SERVER_URL")          # e.g. http://keycloak:8080
-KEYCLOAK_REALM = config("KEYCLOAK_REALM")                    # e.g. sims
-KEYCLOAK_CLIENT_ID = config("KEYCLOAK_CLIENT_ID")            # e.g. sims-backend
+KEYCLOAK_BASE_URL = config("KEYCLOAK_BASE_URL", default="http://localhost:8080")
+KEYCLOAK_REALM = config("KEYCLOAK_REALM", default="sims")
+KEYCLOAK_ISSUER = f"{KEYCLOAK_BASE_URL}/realms/{KEYCLOAK_REALM}"
+KEYCLOAK_JWKS_URL = f"{KEYCLOAK_ISSUER}/protocol/openid-connect/certs"
+KEYCLOAK_AUDIENCE = config("KEYCLOAK_AUDIENCE", default="sims-backend")
+KEYCLOAK_JWKS_TTL_SECONDS = config("KEYCLOAK_JWKS_TTL_SECONDS", default=300, cast=int)
 KEYCLOAK_ALGORITHMS = ["RS256"]
 
 # --- UGC / University -----------------------------------------------

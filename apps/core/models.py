@@ -68,7 +68,7 @@ class Program(models.Model):
     )
     semester_system = models.CharField(
         max_length=10,
-        choices=SemesterSystem.choices,
+        choices=list(SemesterSystem.choices),
         default=SemesterSystem.BI,
     )
     created_at = models.DateTimeField(auto_now_add=True)
@@ -120,7 +120,7 @@ class AcademicTerm(models.Model):
     )
     term_type = models.CharField(
         max_length=10,
-        choices=TermType.choices,
+        choices=list(TermType.choices),
     )
     year = models.PositiveIntegerField()
     start_date = models.DateField()
