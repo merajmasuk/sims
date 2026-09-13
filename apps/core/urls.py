@@ -1,5 +1,5 @@
 from rest_framework.routers import DefaultRouter
-from views import DepartmentViewSet, ProgramViewSet, AcademicTermViewSet
+from .views import DepartmentViewSet, ProgramViewSet, AcademicTermViewSet
 
 router = DefaultRouter()
 router.register(r"departments", DepartmentViewSet, basename="department")

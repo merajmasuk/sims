@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from models import Department, Program, AcademicTerm
+
+from .models import Department, Program, AcademicTerm
 
 
 class DepartmentSerializer(serializers.ModelSerializer):

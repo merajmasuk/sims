@@ -7,14 +7,13 @@ Student record), not simple CRUD, and deserves its own testable unit.
 """
 
 import logging
-
 import requests
+
 from django.apps import apps
 from django.conf import settings
 from django.db import transaction
-from django.utils import timezone
 
-from models import Application
+from .models import Application
 
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,12 @@
 from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticated
-from models import Department, Program, AcademicTerm
-from serializers import DepartmentSerializer, ProgramSerializer, AcademicTermSerializer
+
+from .models import Department, Program, AcademicTerm
+from .serializers import (
+    DepartmentSerializer,
+    ProgramSerializer,
+    AcademicTermSerializer
+)
 
 
 class ReadOnlyViewSet(

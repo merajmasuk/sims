@@ -124,7 +124,11 @@ KEYCLOAK_ALGORITHMS = ["RS256"]
 UNIVERSITY_CODE = config("UNIVERSITY_CODE")                  # 3-digit UGC university code
 
 # --- CORS -----------------------------------------------------------
-CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", default="").split(",")
+CORS_ALLOWED_ORIGINS = config(
+    "CORS_ALLOWED_ORIGINS",
+    default="http://localhost:4200",
+    cast=lambda v: [origin.strip() for origin in v.split(",")],
+)
 
 # --- django-axes (rate limiting) ------------------------------------
 AXES_FAILURE_LIMIT = 5

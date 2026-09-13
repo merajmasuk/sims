@@ -1,5 +1,5 @@
 from django.contrib import admin
-from models import Department, Program, AcademicTerm
+from .models import Department, Program, AcademicTerm
 
 
 @admin.register(Department)

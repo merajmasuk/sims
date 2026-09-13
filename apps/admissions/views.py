@@ -4,16 +4,16 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from models import Application
-from serializers import (
+from .models import Application
+from .serializers import (
     ApplicationCreateSerializer,
     ApplicationReviewSerializer,
     ApplicationSerializer,
 )
-from services import convert_application_to_student
+from .services import convert_application_to_student
 
 # Reuse the role-based permission classes already built in apps.users
-from apps.users.permissions import IsAdminRole
+from apps.users.permissions import IsAdmin
 
 
 class ApplicationViewSet(viewsets.ModelViewSet):
@@ -37,7 +37,7 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         # Public application submission is open; everything else is admin-only.
         if self.action == "create":
             return [AllowAny()]
-        return [IsAuthenticated(), IsAdminRole()]
+        return [IsAuthenticated(), IsAdmin()]
 
     def perform_create(self, serializer):
         serializer.save(status=Application.Status.SUBMITTED)

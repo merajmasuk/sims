@@ -8,10 +8,10 @@ urlpatterns = [
     path("api/core/", include("apps.core.urls")),
 
     # Users — profiles, roles (added when module is built)
-    # path("api/users/", include("apps.users.urls")),
+    path("api/users/", include("apps.users.urls")),
 
     # Admissions
-    # path("api/admissions/", include("apps.admissions.urls")),
+    path("api/admissions/", include("apps.admissions.urls")),
 
     # Students
     # path("api/students/", include("apps.students.urls")),

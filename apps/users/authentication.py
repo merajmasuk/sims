@@ -7,7 +7,7 @@ import requests
 from django.conf import settings
 from rest_framework import authentication, exceptions
 
-from users.models import LoginAuditLog, User
+from apps.users.models import LoginAuditLog, User
 
 logger = logging.getLogger(__name__)
 
