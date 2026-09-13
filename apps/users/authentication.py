@@ -110,7 +110,7 @@ class KeycloakJWTAuthentication(authentication.BaseAuthentication):
             payload = jwt.decode(
                 token,
                 signing_key,
-                algorithms=["HS256"],
+                algorithms=["RS256"],
                 audience=settings.KEYCLOAK_AUDIENCE,
                 issuer=settings.KEYCLOAK_ISSUER,
                 options={"require": ["exp", "iat", "sub"]},
@@ -132,18 +132,36 @@ class KeycloakJWTAuthentication(authentication.BaseAuthentication):
         if not keycloak_uid:
             raise exceptions.AuthenticationFailed("Token missing 'sub' claim.")
 
-        try:
-            user = User.objects.get(keycloak_uid=keycloak_uid)
-        except User.DoesNotExist:
+        # try:
+        #     user = User.objects.get(keycloak_uid=keycloak_uid)
+        # except User.DoesNotExist:
+        #     self._log_login(
+        #         user=None,
+        #         keycloak_uid=keycloak_uid,
+        #         ip_address=ip_address,
+        #         user_agent=user_agent,
+        #         action=LoginAuditLog.Action.LOGIN_FAILED,
+        #     )
+        #     raise exceptions.PermissionDenied(
+        #         "No account is provisioned for this identity. Please contact your administrator."
+        #     )
+        user, created = User.objects.get_or_create(
+            keycloak_uid=keycloak_uid,
+            defaults={
+                "email": payload.get("email", ""),
+                "first_name": payload.get("given_name", ""),
+                "last_name": payload.get("family_name", ""),
+                "sso_provider": "keycloak",
+                "role": User.Role.STUDENT,  # placeholder; _sync_role() corrects it below
+            },
+        )
+        if created:
             self._log_login(
-                user=None,
+                user=user,
                 keycloak_uid=keycloak_uid,
                 ip_address=ip_address,
                 user_agent=user_agent,
-                action=LoginAuditLog.Action.LOGIN_FAILED,
-            )
-            raise exceptions.PermissionDenied(
-                "No account is provisioned for this identity. Please contact your administrator."
+                action=LoginAuditLog.Action.LOGIN_SUCCESS,
             )
 
         if not user.is_active:
@@ -193,9 +211,26 @@ class KeycloakJWTAuthentication(authentication.BaseAuthentication):
         role_priority = [User.Role.ADMIN, User.Role.FACULTY, User.Role.STUDENT]
 
         matched_role = next((r for r in role_priority if r.value in roles), None)
-        if matched_role and user.role != matched_role:
+        if not matched_role:
+            return
+
+        fields_to_update = []
+
+        if user.role != matched_role:
             user.role = matched_role
-            user.save(update_fields=["role"])
+            fields_to_update.append("role")
+
+        is_admin = matched_role == User.Role.ADMIN
+        if user.is_staff != is_admin:
+            user.is_staff = is_admin
+            fields_to_update.append("is_staff")
+        if user.is_superuser != is_admin:
+            user.is_superuser = is_admin
+            fields_to_update.append("is_superuser")
+
+        if fields_to_update:
+            user.save(update_fields=fields_to_update)
+
 
     @staticmethod
     def _get_client_ip(request) -> str:

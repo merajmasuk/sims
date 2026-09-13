@@ -47,8 +47,8 @@ class Application(models.Model):
         app_label = "admissions"
         ordering = ["-submitted_at"]
         indexes = [
-            models.Index(fields=["status"]),
-            models.Index(fields=["email"]),
+            models.Index(fields=["status"], name="admissions_status_idx"),
+            models.Index(fields=["email"], name="admissions_email_idx"),
         ]
 
     def __str__(self):

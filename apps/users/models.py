@@ -81,7 +81,7 @@ class User(AbstractUser):
     sso_uid = models.CharField(max_length=255, null=True, blank=True)
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username"]
+    REQUIRED_FIELDS = []
 
     objects = UserManager()
 
