@@ -22,5 +22,5 @@ requests==2.34.2
 sqlparse==0.6.0
 types-PyYAML==6.0.12.20260906
 typing_extensions==4.16.0
-urllib3==2.7.0
+urllib3==2.8.0
 uuid6==2025.0.1
